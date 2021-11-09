@@ -27,5 +27,60 @@ const checkStrLength = (str, maxLength) => {
   return false;
 };
 
-export { getRandomIntFromTo, checkStrLength };
+/**
+ * Проверка на нажатие клавиши Escape в разных браузерах
+ * @param {*} evt
+ * @returns {string}
+ */
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+/**
+ * Показывает пользователю сообщение о неудачной отправке.
+ * @param {string} index - id template в разметке
+ */
+const showErrorMessageToUser = (index) => {
+  const messageTemplateContainer = document.querySelector(`#${index}`).content.querySelector('.error');
+  const messageToUser = messageTemplateContainer.cloneNode(true);
+  const bodyContainer = document.querySelector('body');
+  bodyContainer.appendChild(messageToUser);
+
+  /**
+   * Добавляет обработчик закрытия окна
+   */
+  const addEventForCloseWindow = () => {
+    document.addEventListener('click', onMessageClick);
+    document.addEventListener('keydown', onMessageEscKeydown);
+  };
+
+  /**
+   * Удаляет элемент и обработчики закрытия окна
+   * @param {Object} element - элемент для удаления
+   */
+  const removeEventForCloseWindow = (element) => {
+    element.remove();
+    document.removeEventListener('click', onMessageClick);
+    document.removeEventListener('keydown', onMessageEscKeydown);
+  };
+
+  /**
+   * Действие при клике мышкой
+   */
+  function onMessageClick() {
+    removeEventForCloseWindow(messageToUser);
+  }
+
+  /**
+   * Действие при нажатии Esc
+   */
+  function onMessageEscKeydown(evt) {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      removeEventForCloseWindow(messageToUser);
+    }
+  }
+
+  addEventForCloseWindow();
+};
+
+export { getRandomIntFromTo, checkStrLength, showErrorMessageToUser };
 
