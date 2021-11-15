@@ -1,4 +1,5 @@
 import { showErrorMessageToUser } from './utils.js';
+import { saveDataForBigPicture, openBigPicture } from './big-picture.js';
 
 /**
  * Получение данных от сервера
@@ -9,10 +10,14 @@ const getData = (onSuccess) => {
     .then((response) => response.json())
     .then((data) => {
       const picturesContainer = document.querySelector('.pictures');
+      const fragment = document.createDocumentFragment();
       data.forEach((item) => {
         const picture = onSuccess(item);
-        picturesContainer.prepend(picture);
+        fragment.appendChild(picture);
       });
+      picturesContainer.appendChild(fragment);
+      saveDataForBigPicture(data);
+      picturesContainer.addEventListener('click', openBigPicture);
 
     })
     .catch(() => showErrorMessageToUser('get-error'));

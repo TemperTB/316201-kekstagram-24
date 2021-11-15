@@ -82,5 +82,5 @@ const showErrorMessageToUser = (index) => {
   addEventForCloseWindow();
 };
 
-export { getRandomIntFromTo, checkStrLength, showErrorMessageToUser };
+export { getRandomIntFromTo, checkStrLength, showErrorMessageToUser, isEscapeKey };
 
