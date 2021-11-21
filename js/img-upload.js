@@ -8,7 +8,6 @@ const scaleControlSmallerContainer = imgUploadFormContainer.querySelector('.scal
 const scaleControlBiggerContainer = imgUploadFormContainer.querySelector('.scale__control--bigger');
 const scaleControlValueContainer = imgUploadFormContainer.querySelector('.scale__control--value');
 const imgUploadPreviewContainer = imgUploadFormContainer.querySelector('.img-upload__preview').querySelector('img');
-const effectsRadioContainers = imgUploadFormContainer.querySelectorAll('.effects__radio');
 const effectsListContainer = imgUploadFormContainer.querySelector('.effects__list');
 /**
  * Действия при клике на кнопку уменьшения изображения
@@ -26,9 +25,9 @@ const onScaleControlSmallerClick = () => {
  */
 const onScaleControlBiggerClick = () => {
   const percent = +scaleControlValueContainer.value.substr(0, scaleControlValueContainer.value.length - 1);
-  if (percent > 25) {
-    scaleControlValueContainer.value = `${percent - 25}%`;
-    imgUploadPreviewContainer.style.transform = `scale(${percent - 25}%)`;
+  if (percent < 100) {
+    scaleControlValueContainer.value = `${percent + 25}%`;
+    imgUploadPreviewContainer.style.transform = `scale(${percent + 25}%)`;
   }
 };
 
@@ -65,9 +64,10 @@ const removeScaleControlBiggerClick = () => {
 /**
  * Действия при клике на изображения с эффектами
  */
-const onEffectsRadioContainersClick = (evt) => {
-  if (evt.target.matches('span')) {
-    console.log(1);
+const onEffectsRadioContainersChange = (evt) => {
+  imgUploadPreviewContainer.classList.remove(...imgUploadPreviewContainer.classList);
+  if (evt.target.checked) {
+    imgUploadPreviewContainer.classList.add(`effects__preview--${evt.target.value}`);
   }
 };
 
@@ -75,14 +75,14 @@ const onEffectsRadioContainersClick = (evt) => {
  * Добавляет обработчик клика на кнопку увеличения добавляемого изображения
  */
 const addEffectsRadioContainers = () => {
-  effectsListContainer.addEventListener('change', onEffectsRadioContainersClick);
+  effectsListContainer.addEventListener('change', onEffectsRadioContainersChange);
 };
 
 /**
  * Удаляет обработчик клика на кнопку увеличения добавляемого изображения
  */
 const removeEffectsRadioContainers = () => {
-  effectsListContainer.removeEventListener('change', onEffectsRadioContainersClick);
+  effectsListContainer.removeEventListener('change', onEffectsRadioContainersChange);
 };
 
 /**
