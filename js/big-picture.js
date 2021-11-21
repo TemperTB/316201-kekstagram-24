@@ -1,7 +1,5 @@
 import { isEscapeKey } from './utils.js';
 
-let data;
-
 const bigPictureContainer = document.querySelector('.big-picture');
 const imageContainer = bigPictureContainer.querySelector('.big-picture__img');
 const image = imageContainer.querySelector('img');
@@ -14,13 +12,6 @@ const smallCommentsCountContainer = document.querySelector('.comments-loader');
 const body = document.querySelector('body');
 const closeButtonContainer = bigPictureContainer.querySelector('.big-picture__cancel');
 
-/**
- * Сохраняет данные с сервера в массив data
- * @param {Object[]} array
- */
-const saveDataForBigPicture = (array) => {
-  data = array;
-};
 
 /**
  * Добавляет комментарии к картинке
@@ -49,7 +40,7 @@ const addComments = (array) => {
  * Открывает окно с картинкой при клике на любое изображение
  * @param {Object} evt
  */
-const openBigPicture = (evt) => {
+const openBigPicture = (data, evt) => {
   if (!evt.target.matches('img')) {
     return;
   }
@@ -71,10 +62,13 @@ const openBigPicture = (evt) => {
   }
 
   bigPictureContainer.classList.remove('hidden');
-  smallLikeCountContainer.classList.add('hidden');
-  smallCommentsCountContainer.classList.add('hidden');
+  // smallLikeCountContainer.classList.add('hidden');
+  // smallCommentsCountContainer.classList.add('hidden');
   body.classList.add('modal-open');
 
+  /**
+   * Добавляет обработчики закрытия окна
+   */
   const addEventForCloseBigPicture = () => {
     closeButtonContainer.addEventListener('click', onCloseButtonClick);
     document.addEventListener('keydown', onEscKeydown);
@@ -111,4 +105,4 @@ const openBigPicture = (evt) => {
   addEventForCloseBigPicture();
 };
 
-export { saveDataForBigPicture, openBigPicture };
+export { openBigPicture };

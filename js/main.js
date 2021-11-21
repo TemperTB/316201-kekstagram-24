@@ -1,4 +1,6 @@
 import { getData } from './api.js';
-import { makePicture } from './pictures.js';
+import { onUploadFileChange } from './img-upload.js';
 
-getData(makePicture);
+getData();
+
+onUploadFileChange();
