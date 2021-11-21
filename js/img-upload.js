@@ -1,5 +1,18 @@
 import { isEscapeKey } from './utils.js';
 
+/**
+ * Шаг увеличения/уменьшения масштаба
+ */
+const SCALE_STEP = 25;
+/**
+ * Максимальный масштаб изображения
+ */
+const SCALE_MAX = 100;
+/**
+ * Минимальный масштаб изображения
+ */
+const SCALE_MIN = 25;
+
 const uploadFileContainer = document.querySelector('#upload-file');
 const imgUploadFormContainer = document.querySelector('.img-upload__overlay');
 const body = document.querySelector('body');
@@ -14,9 +27,9 @@ const effectsListContainer = imgUploadFormContainer.querySelector('.effects__lis
  */
 const onScaleControlSmallerClick = () => {
   const percent = +scaleControlValueContainer.value.substr(0, scaleControlValueContainer.value.length - 1);
-  if (percent > 25) {
-    scaleControlValueContainer.value = `${percent - 25}%`;
-    imgUploadPreviewContainer.style.transform = `scale(${percent - 25}%)`;
+  if (percent > SCALE_MIN) {
+    scaleControlValueContainer.value = `${percent - SCALE_STEP}%`;
+    imgUploadPreviewContainer.style.transform = `scale(${percent - SCALE_STEP}%)`;
   }
 };
 
@@ -25,9 +38,9 @@ const onScaleControlSmallerClick = () => {
  */
 const onScaleControlBiggerClick = () => {
   const percent = +scaleControlValueContainer.value.substr(0, scaleControlValueContainer.value.length - 1);
-  if (percent < 100) {
-    scaleControlValueContainer.value = `${percent + 25}%`;
-    imgUploadPreviewContainer.style.transform = `scale(${percent + 25}%)`;
+  if (percent < SCALE_MAX) {
+    scaleControlValueContainer.value = `${percent + SCALE_STEP}%`;
+    imgUploadPreviewContainer.style.transform = `scale(${percent + SCALE_STEP}%)`;
   }
 };
 
@@ -42,9 +55,7 @@ const addScaleControlSmallerClick = () => {
  * Удаляет обработчик клика на кнопку уменьшения добавляемого изображения
  */
 const removeScaleControlSmallerClick = () => {
-  scaleControlSmallerContainer.addEventListener('click', () => {
-
-  });
+  scaleControlSmallerContainer.removeEventListener('click', onScaleControlSmallerClick);
 };
 
 /**
@@ -125,7 +136,9 @@ const openImgUploadForm = () => {
    * Действие при нажатии Esc
    */
   function onEscKeydown(evt) {
-    if (isEscapeKey(evt)) {
+    if (isEscapeKey(evt) &&
+    !(evt.target.matches('input[class="text__hashtags"]') ||
+    evt.target.matches('textarea[class="text__description"]'))) {
       evt.preventDefault();
       removeEventForCloseImgUploadForm();
     }
