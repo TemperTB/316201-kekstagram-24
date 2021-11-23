@@ -698,6 +698,21 @@ main {
   border-radius: 5px;
 }
 
+.text__error {
+  width: 450px;
+
+  margin: 0 auto;
+  margin-top: -15px;
+  margin-bottom: 10px;
+
+  font-family: "Open Sans", "Arial", sans-serif;
+  text-align: left;
+  text-transform: none;
+  font-weight: 400;
+  color: #ff0000;
+
+}
+
 
 /**
  * Кнопка для отправки изображения

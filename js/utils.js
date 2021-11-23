@@ -82,5 +82,18 @@ const showErrorMessageToUser = (index) => {
   addEventForCloseWindow();
 };
 
-export { getRandomIntFromTo, checkStrLength, showErrorMessageToUser, isEscapeKey };
+/**
+ * Добавляет блок с ошибкой
+ * @param {Object} element - элемент, после которого нужного поставить блок в разметке
+ * @param {string} errorMessage - подсказка
+ */
+const addErrorBlock = (element, errorMessage) => {
+  const block = document.createElement('div');
+  block.classList.add('text__error');
+  block.textContent = errorMessage;
+  element.after(block);
+};
+
+
+export { getRandomIntFromTo, checkStrLength, showErrorMessageToUser, isEscapeKey, addErrorBlock };
 

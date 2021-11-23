@@ -1,4 +1,4 @@
-import { isEscapeKey } from './utils.js';
+import { isEscapeKey, addErrorBlock } from './utils.js';
 
 /**
  * Шаг увеличения/уменьшения масштаба
@@ -12,6 +12,15 @@ const SCALE_MAX = 100;
  * Минимальный масштаб изображения
  */
 const SCALE_MIN = 25;
+/**
+ * Максимальная длина описания
+ */
+const MAX_DESCRIPTION_LENGTH = 140;
+/**
+ * Регулярное выражение для проверки хэштегов
+ */
+const REGEXP_FOR_HASHTAG = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
+
 
 const uploadFileContainer = document.querySelector('#upload-file');
 const imgUploadFormContainer = document.querySelector('.img-upload__overlay');
@@ -22,6 +31,10 @@ const scaleControlBiggerContainer = imgUploadFormContainer.querySelector('.scale
 const scaleControlValueContainer = imgUploadFormContainer.querySelector('.scale__control--value');
 const imgUploadPreviewContainer = imgUploadFormContainer.querySelector('.img-upload__preview').querySelector('img');
 const effectsListContainer = imgUploadFormContainer.querySelector('.effects__list');
+const buttonSubmitContainer = imgUploadFormContainer.querySelector('.img-upload__submit');
+const descriptionContainer = imgUploadFormContainer.querySelector('.text__description');
+const hashtagsContainer = imgUploadFormContainer.querySelector('.text__hashtags');
+
 /**
  * Действия при клике на кнопку уменьшения изображения
  */
@@ -45,34 +58,6 @@ const onScaleControlBiggerClick = () => {
 };
 
 /**
- * Добавляет обработчик клика на кнопку уменьшения добавляемого изображения
- */
-const addScaleControlSmallerClick = () => {
-  scaleControlSmallerContainer.addEventListener('click', onScaleControlSmallerClick);
-};
-
-/**
- * Удаляет обработчик клика на кнопку уменьшения добавляемого изображения
- */
-const removeScaleControlSmallerClick = () => {
-  scaleControlSmallerContainer.removeEventListener('click', onScaleControlSmallerClick);
-};
-
-/**
- * Добавляет обработчик клика на кнопку увеличения добавляемого изображения
- */
-const addScaleControlBiggerClick = () => {
-  scaleControlBiggerContainer.addEventListener('click', onScaleControlBiggerClick);
-};
-
-/**
- * Удаляет обработчик клика на кнопку увеличения добавляемого изображения
- */
-const removeScaleControlBiggerClick = () => {
-  scaleControlBiggerContainer.removeEventListener('click', onScaleControlBiggerClick);
-};
-
-/**
  * Действия при клике на изображения с эффектами
  */
 const onEffectsRadioContainersChange = (evt) => {
@@ -83,17 +68,43 @@ const onEffectsRadioContainersChange = (evt) => {
 };
 
 /**
- * Добавляет обработчик клика на кнопку увеличения добавляемого изображения
+ * Действия при нажатии на кнопку "Опубликовать"
  */
-const addEffectsRadioContainers = () => {
-  effectsListContainer.addEventListener('change', onEffectsRadioContainersChange);
-};
+const validateForm = (evt) => {
+  const errorBlocks = imgUploadFormContainer.querySelectorAll('.text__error');
+  for (const errorBlock of errorBlocks) {
+    errorBlock.remove();
+  }
+  let hasError = false;
 
-/**
- * Удаляет обработчик клика на кнопку увеличения добавляемого изображения
- */
-const removeEffectsRadioContainers = () => {
-  effectsListContainer.removeEventListener('change', onEffectsRadioContainersChange);
+  const hashtagString = hashtagsContainer.value.trim().toLowerCase();
+  const hashtags = hashtagString.split(' ');
+  if (hashtags.length > 5) {
+    hasError = true;
+    addErrorBlock(hashtagsContainer, 'Не больше 5-ти хэштегов');
+  }
+
+  for (const hashtag of hashtags) {
+    if (!REGEXP_FOR_HASHTAG.test(hashtag)) {
+      hasError = true;
+      addErrorBlock(hashtagsContainer, 'Проверьте правильность написанных хэштегов: начинаются с #, но не могут состоять из символа #, не содержат недопустимых знаков (#, @, $ и т. п.), имеют не больше 20-ти символов');
+      break;
+    }
+    if (hashtags.indexOf(hashtag) !== hashtags.lastIndexOf(hashtag)) {
+      addErrorBlock(hashtagsContainer, 'Замечены одинаковые хэштеги, разберитесь');
+      break;
+    }
+  }
+
+  if (descriptionContainer.value.length > MAX_DESCRIPTION_LENGTH) {
+    addErrorBlock(descriptionContainer, 'Не более 140 символов');
+    hasError = true;
+  }
+
+  if (hasError) {
+    evt.preventDefault();
+  }
+
 };
 
 /**
@@ -120,9 +131,10 @@ const openImgUploadForm = () => {
     imgUploadFormContainer.classList.add('hidden');
     closeButtonContainer.removeEventListener('click', onCloseButtonClick);
     document.removeEventListener('keydown', onEscKeydown);
-    removeScaleControlSmallerClick();
-    removeScaleControlBiggerClick();
-    removeEffectsRadioContainers();
+    scaleControlSmallerContainer.removeEventListener('click', onScaleControlSmallerClick);
+    scaleControlBiggerContainer.removeEventListener('click', onScaleControlBiggerClick);
+    effectsListContainer.removeEventListener('change', onEffectsRadioContainersChange);
+    buttonSubmitContainer.removeEventListener('click', validateForm);
   };
 
   /**
@@ -145,9 +157,10 @@ const openImgUploadForm = () => {
   }
 
   addEventForCloseImgUploadForm();
-  addScaleControlSmallerClick();
-  addScaleControlBiggerClick();
-  addEffectsRadioContainers();
+  scaleControlSmallerContainer.addEventListener('click', onScaleControlSmallerClick);
+  scaleControlBiggerContainer.addEventListener('click', onScaleControlBiggerClick);
+  effectsListContainer.addEventListener('change', onEffectsRadioContainersChange);
+  buttonSubmitContainer.addEventListener('click', validateForm);
 };
 
 /**
@@ -156,5 +169,6 @@ const openImgUploadForm = () => {
 const onUploadFileChange = () => {
   uploadFileContainer.addEventListener('click', openImgUploadForm);
 };
+
 
 export { onUploadFileChange };
